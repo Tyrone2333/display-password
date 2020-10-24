@@ -1,13 +1,12 @@
 // ==UserScript==
 // @name         双击显示密码
 // @namespace    https://github.com/Tyrone2333/display-password
-// @version      1.2
+// @version      1.3
 // @description  双击显示密码,失去焦点隐藏.不覆盖 onload,支持密码框后生成的网站
 // @author       en20
 // @include      http*://*
-// @exclude      *baidu.com*
 // @grant        none
-// @run-at		 document-end
+// @run-at		 document-start
 // ==/UserScript==
 (function () {
     function displayPassword() {
@@ -53,24 +52,36 @@
         }
     }
 
-    // 监听每次 dom 变化,重新寻找密码框添加事件
-    const mutationObserver = new MutationObserver(debounce((mutations) => {
-        displayPassword()
-        // mutations.forEach(function (mutation) {
-        //     console.log(mutation.addedNodes)
-        // })
-    }, 300))
+    // 保存旧版 MutationObserver,防止如百度之类站点覆盖 MutationObserver
+    function preserveMutationObserver() {
+        window.preserveMutationObserver = window.MutationObserver
+    }
 
-    // 开始监听页面根元素 HTML 变化。
-    mutationObserver.observe(document.documentElement, {
-        attributes: true,
-        characterData: true,
-        childList: true,
-        subtree: true,
-        attributeOldValue: true,
-        characterDataOldValue: true,
-    })
+    function addMutationObserver() {
+        console.log(window.preserveMutationObserver)
+        const MutationObserver = window.preserveMutationObserver || window.MutationObserver
+        // 监听每次 dom 变化,重新寻找密码框添加事件
+        const mutationObserver = new MutationObserver(debounce((mutations) => {
+            displayPassword()
+            // mutations.forEach(function (mutation) {
+            //     console.log(mutation.addedNodes)
+            // })
+        }, 300))
+
+        // 开始监听页面根元素 HTML 变化。
+        mutationObserver.observe(document.documentElement, {
+            attributes: true,
+            characterData: true,
+            childList: true,
+            subtree: true,
+            attributeOldValue: true,
+            characterDataOldValue: true,
+        })
+    }
+
+    preserveMutationObserver()
 
     addLoadEvent(displayPassword)
+    addLoadEvent(addMutationObserver)
 
 })()
