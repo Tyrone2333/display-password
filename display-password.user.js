@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         双击显示密码
 // @namespace    https://github.com/Tyrone2333/display-password
-// @version      1.3
+// @version      1.3.1
 // @description  双击显示密码,失去焦点隐藏.不覆盖 onload,支持密码框后生成的网站
 // @author       en20
 // @include      http*://*
@@ -58,7 +58,6 @@
     }
 
     function addMutationObserver() {
-        console.log(window.preserveMutationObserver)
         const MutationObserver = window.preserveMutationObserver || window.MutationObserver
         // 监听每次 dom 变化,重新寻找密码框添加事件
         const mutationObserver = new MutationObserver(debounce((mutations) => {
