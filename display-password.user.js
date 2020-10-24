@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         双击显示密码
 // @namespace    https://github.com/Tyrone2333/display-password
-// @version      1.1
+// @version      1.2
 // @description  双击显示密码,失去焦点隐藏.不覆盖 onload,支持密码框后生成的网站
 // @author       en20
 // @include      http*://*
@@ -13,11 +13,12 @@
     function displayPassword() {
         let list = document.querySelectorAll("input[type=password]")
         for (let i = 0; i < list.length; i++) {
-            list[i].ondblclick = function () {
-                list[i].setAttribute("type", "text")
+            let item = list[i]
+            item.ondblclick = function () {
+                item.setAttribute("type", "text")
             }
-            list[i].onblur = function () {
-                list[i].setAttribute("type", "password")
+            item.onblur = function () {
+                item.setAttribute("type", "password")
             }
         }
     }
@@ -54,9 +55,10 @@
 
     // 监听每次 dom 变化,重新寻找密码框添加事件
     const mutationObserver = new MutationObserver(debounce((mutations) => {
-        mutations.forEach(function (mutation) {
-            displayPassword()
-        })
+        displayPassword()
+        // mutations.forEach(function (mutation) {
+        //     console.log(mutation.addedNodes)
+        // })
     }, 300))
 
     // 开始监听页面根元素 HTML 变化。
